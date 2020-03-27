@@ -4,21 +4,28 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Category = props => {
   return (
-    <TouchableOpacity>
-      <View style={styles.categoryCard}>
-        <View style={styles.categoryImage}>
+    <View style={styles.categoryCard}>
+      <TouchableOpacity style={{ height: '100%', width: '100%' }}>
+        <View style={{ flex: 3 }}>
           <Image
             source={{
               uri: props.category.imageUri
             }}
-            style={{ width: "100%", height: "100%" }}
+            style={{
+              flex: 1,
+              height: null,
+              width: null,
+              resizeMode: "cover",
+              borderTopRightRadius: 8,
+              borderTopLeftRadius: 8
+            }}
           />
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.categoryText}>{props.category.name}</Text>
+          <Text style={{ padding: 8 }}>{props.category.name}</Text>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </View>
   );
 };
 
@@ -37,12 +44,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 1
-  },
-  categoryImage: {
-    flex: 3,
-    overflow: "hidden",
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8
   },
   categoryText: {
     padding: 8

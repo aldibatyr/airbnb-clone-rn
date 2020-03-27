@@ -5,20 +5,19 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Platform,
-  StatusBar,
   Image,
-  Dimensions,
   ImageBackground,
-  Button
+  Animated,
+  useWindowDimensions
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Category from "../components/Category";
-
-const { height, width } = Dimensions.get("window");
+import Adventure from "../components/Adventure";
+import SearchParam from "../components/SearchParam";
 
 const Explore = () => {
+  const { width: windowWidth } = useWindowDimensions();
   const store = [
     {
       imageUri:
@@ -43,34 +42,43 @@ const Explore = () => {
         "https://images.unsplash.com/photo-1524850011238-e3d235c7d4c9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1387&q=80",
       name: "Hatted Planner",
       country: "United States",
-      pricePerPerson: 595
+      pricePerPerson: 595,
+      rating: 5
     },
     {
       imageUri:
         "https://images.unsplash.com/photo-1530521954074-e64f6810b32d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80",
       name: "Airport Overnight Stay",
       country: "Netherlands",
-      pricePerPerson: 355
+      pricePerPerson: 355,
+      rating: 3
     },
     {
       imageUri:
         "https://images.unsplash.com/photo-1508672019048-805c876b67e2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2186&q=80",
       name: "Lakeside Party",
       country: "Canada",
-      pricePerPerson: 250
+      pricePerPerson: 250,
+      rating: 4
     },
     {
       imageUri:
         "https://images.unsplash.com/photo-1530789253388-582c481c54b0?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80",
       name: "Air Baloons Festival",
       country: "Cappadocia",
-      pricePerPerson: 450
+      pricePerPerson: 450,
+      rating: 5
     }
   ];
+
+  const scrollY = React.useRef(new Animated.Value(0)).current;
+
+  const hide = () => {};
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.searchBarWrapper}>
+        <Animated.View style={styles.searchBarWrapper}>
           <View style={styles.searchBar}>
             <AntDesign name="search1" size={20} style={{ marginRight: 8 }} />
             <TextInput
@@ -80,17 +88,36 @@ const Explore = () => {
               style={{ fontSize: 16, fontWeight: "700" }}
             />
           </View>
-        </View>
-        <ScrollView scrollEventThrottle={16}>
+          <Animated.View style={{ marginVertical: 15, flexDirection: "row" }}>
+            <SearchParam name="Guests" />
+            <SearchParam name="Dates" />
+          </Animated.View>
+        </Animated.View>
+        <ScrollView
+          scrollEventThrottle={16}
+          onScroll={Animated.event([
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: scrollY
+                }
+              }
+            }
+          ])}
+        >
           <View style={styles.containerMain}>
             <Text style={styles.header}>
               What can we help you find, Aldiyar?
             </Text>
           </View>
           <View style={styles.categories}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {store.map(category => {
-                return <Category category={category} />;
+            <ScrollView
+              contentContainerStyle={{alignItems: 'center'}}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+            >
+              {store.map((category, i) => {
+                return <Category key={i} category={category} />;
               })}
             </ScrollView>
           </View>
@@ -106,7 +133,7 @@ const Explore = () => {
                     "https://images.unsplash.com/photo-1521401830884-6c03c1c87ebb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2100&q=80"
                 }}
                 style={{
-                  width: width - 40,
+                  width: windowWidth - 40,
                   height: 300,
                   marginHorizontal: 20,
                   marginTop: 20,
@@ -129,49 +156,41 @@ const Explore = () => {
               Multi-day trips led by local experts - activities, meals, and
               stays included.
             </Text>
-            {experiences.map(experience => {
-              return (
-                <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
-                  <View style={{ width: width / 2, height: width / 2 }}>
-                    <View style={{ flex: 1 }}>
-                      <Image
-                        source={{ uri: experience.imageUri }}
-                        style={{
-                          flex: 1,
-                          width: null,
-                          height: null,
-                          resizeMode: "cover"
-                        }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        flex: 0.5,
-                        alignItems: "flex-start",
-                        justifyContent: "space-evenly"
-                      }}
-                    >
-                      <Text
-                        style={{
-                          textTransform: "uppercase",
-                          fontWeight: "700",
-                          color: "#767676",
-                          fontSize: 10
-                        }}
-                      >
-                        {experience.country}
-                      </Text>
-                      <Text style={{ fontWeight: "500", color: "#484848" }}>
-                        {experience.name}
-                      </Text>
-                      <Text style={{ fontWeight: "200", color: "#484848" }}>
-                        ${experience.pricePerPerson} per person
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              );
-            })}
+            <View
+              style={{
+                paddingHorizontal: 20,
+                marginTop: 20,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                flexWrap: "wrap"
+              }}
+            >
+              {experiences.map((experience, i) => {
+                return (
+                  <Adventure
+                    key={i}
+                    experience={experience}
+                    width={windowWidth}
+                  />
+                );
+              })}
+            </View>
+            <TouchableOpacity
+              style={{
+                alignItems: "center",
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: "#484848",
+                marginHorizontal: 20,
+                paddingVertical: 16
+              }}
+            >
+              <Text
+                style={{ fontSize: 16, fontWeight: "500", color: "#484848" }}
+              >
+                Show all adventures
+              </Text>
+            </TouchableOpacity>
           </View>
 
           <View style={{ marginTop: 20 }}>
@@ -217,11 +236,8 @@ const styles = StyleSheet.create({
     paddingTop: 20
   },
   searchBarWrapper: {
-    height: 80,
+    // height: 80,
     backgroundColor: "#ffffff",
-    shadowColor: "#767676",
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.2,
     paddingHorizontal: 20
   },
   searchBar: {
@@ -235,12 +251,12 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "lightgrey",
     shadowOffset: {
-      height: 1,
+      height: 2,
       width: 0
     },
     shadowColor: "#000000",
     shadowOpacity: 0.1,
-    shadowRadius: 10,
+    shadowRadius: 1,
     elevation: 1
   },
   header: {
@@ -249,9 +265,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   categories: {
-    height: 170,
+    flex: 1,
+    height: 200,
     justifyContent: "center",
-    marginTop: 20
+    alignItems: "center"
   },
   bnbPlus: {
     flex: 1

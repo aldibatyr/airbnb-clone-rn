@@ -1,12 +1,14 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React from "react";
+import { View, Text, SafeAreaView, Animated, Button } from "react-native";
 
 const Inbox = () => {
   return (
-    <View>
-      <Text>Inbox</Text>
-    </View>
-  )
-}
+    <SafeAreaView style={{flex: 1}}>
+      <View style={{flex: 1, justifyContent: "center"}}>
+        <Button title="start animation"/>
+      </View>
+    </SafeAreaView>
+  );
+};
 
-export default Inbox
+export default Inbox;
